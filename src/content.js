@@ -1,4 +1,4 @@
-
+//debugger;
 console.log("content script2 loaded");
 
 function addButton(){
@@ -7,7 +7,8 @@ function addButton(){
     newTagElements.attr('ce-processed','');
 
     $("<a class='wds-button wds-button--ghost wds-button--sm' href='#'>↑ Export tags</a>")
-        .insertAfter( newTagElements );
+        .on("click", handleButtonClick)
+        .insertAfter( newTagElements )
 }
 
 function registerDomWatcherToInsertElement() {
@@ -24,6 +25,10 @@ function registerDomWatcherToInsertElement() {
         subtree: true,
         childList:true
     });
+}
+
+function handleButtonClick(sender){
+    alert('button clicked');
 }
 
 async function extensionMain() {
