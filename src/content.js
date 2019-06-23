@@ -27,8 +27,35 @@ function registerDomWatcherToInsertElement() {
     });
 }
 
+function copyToClipboard(text) {
+    const input = document.createElement('input');
+    input.style.position = 'fixed';
+    input.style.opacity = 0;
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('Copy');
+    document.body.removeChild(input);
+};
+
 function handleButtonClick(sender){
     alert('button clicked');
+
+    // get to the parent element that we need
+    var targetParent = $(sender.target).closest('div[view-role="TaCategoriesPanel"]');
+    
+    var tagLabels = $(targetParent).find('a.ta-category-tag');
+    var fullMessage = '';
+    for( tag of tagLabels){
+        var percentage = $(tag).closest('div[class="sm-grid"]').find('div[class="ta-list-item-percentage"]').text();
+        var count = $(tag).closest('div[class="sm-grid"]').find('div[class="ta-list-item-count"]').text();
+        
+        var msg = $(tag).text() + '\t' + percentage + '\t' + count;
+        fullMessage += msg + '\n';
+        console.log(msg);
+    }
+    alert(fullMessage);
+    copyToClipboard(fullMessage);
 }
 
 async function extensionMain() {
