@@ -1,4 +1,4 @@
-//debugger;
+debugger;
 console.log("content script2 loaded");
 
 function addButton(){
@@ -39,8 +39,6 @@ function copyToClipboard(text) {
 };
 
 function handleButtonClick(sender){
-    alert('button clicked');
-
     // get to the parent element that we need
     var targetParent = $(sender.target).closest('div[view-role="TaCategoriesPanel"]');
     
@@ -56,6 +54,45 @@ function handleButtonClick(sender){
     }
     alert(fullMessage);
     copyToClipboard(fullMessage);
+    showTagsInPopup(sender.target);
+    return false;
+}
+
+function showTagsInPopup(exportButton){
+    var htmlToAdd = `
+        <div class="popup">
+            <table class="popuptext">
+                <thead>
+                    <tr>
+                        <th>tag</th>
+                        <th>% overall</th>
+                        <th>count</th>
+                    </tr>
+                <thead>
+                <tbody>
+                    <tr>
+                        <td>acquisition</td>
+                        <td>1.2%</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>add-references</td>
+                        <td>0%</td>
+                        <td>0</td>
+                    </tr>
+                <tbody>
+            </table>
+        </div>
+    `;
+
+    $(htmlToAdd)
+    .insertAfter( $(exportButton) );
+
+/*
+    $("<a class='wds-button wds-button--ghost wds-button--sm' href='#'>↑ Export tags</a>")
+        .on("click", handleButtonClick)
+        .insertAfter( newTagElements )
+*/
 }
 
 async function extensionMain() {

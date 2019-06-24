@@ -3,11 +3,12 @@
     "version": "1.0",
     "description": "Adds the ability to export tag summary data in surveymonkey.com",
     "permissions": [
-        "activeTab","declarativeContent","storage"
+        "tabs","activeTab","declarativeContent","storage"
     ],
     "content_scripts":[{
         "matches":["https://www.surveymonkey.com/analyze/*"],
-        "js":["jquery-3.4.1.min.js","content.js"]
+        "js":["jquery-3.4.1.min.js","content.js"],
+        "css":["content.css"]
     }],
     "icons": {
         "16": "images/get_started16.png",
