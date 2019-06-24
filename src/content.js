@@ -55,17 +55,12 @@ function handleButtonClick(sender) {
             "count": count
         };
         tagInfo.push(tagObj);
-        //var msg = $(tag).text() + '\t' + percentage + '\t' + count;
-        //fullMessage += msg + '\n';
-        //console.log(msg);
     }
-    //alert(fullMessage);
-    //copyToClipboard(fullMessage);
-    showTagsInPopup(sender.target, tagInfo);
+    showTagInfo(sender.target, tagInfo);
     return false;
 }
 
-function showTagsInPopup(exportButton, tagInfo) {
+function showTagInfo(exportButton, tagInfo) {
     var htmlToAdd = `
         <div id="tagsExport">
             <table id="tagsTable">
@@ -83,28 +78,11 @@ function showTagsInPopup(exportButton, tagInfo) {
         </div>
     `;
 
+    // remove tagsExport if it exists
+    $("#tagsExport").remove();
+
     $(htmlToAdd)
         .insertAfter($(exportButton));
-
-    //     var tagTableBody = $("tagTableBody");
-    //     for (tag of tagInfo) {
-    //         var elementsToAdd = `
-    //         <tr>
-    //             <td>${tag.tag}</td>
-    //             <td>${tag.percentOverall}%</td>
-    //             <td>${tag.count}</td>
-    //         </tr>
-    // `;
-    //         tagTableBody.append(elementsToAdd);
-    //}
-
-
-
-    /*
-        $("<a class='wds-button wds-button--ghost wds-button--sm' href='#'>↑ Export tags</a>")
-            .on("click", handleButtonClick)
-            .insertAfter( newTagElements )
-    */
 }
 
 function getTableElementsFor(tagInfo) {
@@ -119,16 +97,6 @@ function getTableElementsFor(tagInfo) {
 `;
     }
     return result;
-    //     var result = `
-    //         <tr>
-    //             <td>${tag.tag}</td>
-    //             <td>${tag.percentOverall}%</td>
-    //             <td>${tag.count}</td>
-    //         </tr>
-    // `;
-
-    //     return result;
-    //     s
 }
 async function extensionMain() {
     registerDomWatcherToInsertElement();
