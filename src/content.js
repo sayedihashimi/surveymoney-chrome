@@ -1,20 +1,20 @@
 debugger;
 console.log("content script2 loaded");
 
-function addButton(){
+function addButton() {
     var newTagElements = $("a:not([ce-processed])[ta-new-category-btn]");
     // first add the attribute to prevent duplication
-    newTagElements.attr('ce-processed','');
+    newTagElements.attr('ce-processed', '');
 
     $("<a class='wds-button wds-button--ghost wds-button--sm' href='#'>↑ Export tags</a>")
         .on("click", handleButtonClick)
-        .insertAfter( newTagElements )
+        .insertAfter(newTagElements)
 }
 
 function registerDomWatcherToInsertElement() {
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
-    var observer = new MutationObserver(function (mutations, observer) {
+    var observer = new MutationObserver(function(mutations, observer) {
         // fired when a mutation occurs
         // console.log(mutations, observer);
         console.log('calling addButton')
@@ -23,7 +23,7 @@ function registerDomWatcherToInsertElement() {
     // TODO: can this be fine tuned?
     observer.observe(document, {
         subtree: true,
-        childList:true
+        childList: true
     });
 }
 
@@ -38,16 +38,16 @@ function copyToClipboard(text) {
     document.body.removeChild(input);
 };
 
-function handleButtonClick(sender){
+function handleButtonClick(sender) {
     // get to the parent element that we need
     var targetParent = $(sender.target).closest('div[view-role="TaCategoriesPanel"]');
-    
+
     var tagLabels = $(targetParent).find('a.ta-category-tag');
     var fullMessage = '';
-    for( tag of tagLabels){
+    for (tag of tagLabels) {
         var percentage = $(tag).closest('div[class="sm-grid"]').find('div[class="ta-list-item-percentage"]').text();
         var count = $(tag).closest('div[class="sm-grid"]').find('div[class="ta-list-item-count"]').text();
-        
+
         var msg = $(tag).text() + '\t' + percentage + '\t' + count;
         fullMessage += msg + '\n';
         console.log(msg);
@@ -58,10 +58,10 @@ function handleButtonClick(sender){
     return false;
 }
 
-function showTagsInPopup(exportButton){
+function showTagsInPopup(exportButton) {
     var htmlToAdd = `
-        <div class="popup">
-            <table class="popuptext">
+        <div id="tagsExport">
+            <table id="tagsTable">
                 <thead>
                     <tr>
                         <th>tag</th>
@@ -86,19 +86,19 @@ function showTagsInPopup(exportButton){
     `;
 
     $(htmlToAdd)
-    .insertAfter( $(exportButton) );
+        .insertAfter($(exportButton));
 
-/*
-    $("<a class='wds-button wds-button--ghost wds-button--sm' href='#'>↑ Export tags</a>")
-        .on("click", handleButtonClick)
-        .insertAfter( newTagElements )
-*/
+    /*
+        $("<a class='wds-button wds-button--ghost wds-button--sm' href='#'>↑ Export tags</a>")
+            .on("click", handleButtonClick)
+            .insertAfter( newTagElements )
+    */
 }
 
 async function extensionMain() {
     registerDomWatcherToInsertElement();
     addButton();
-    
+
 }
 
 extensionMain();
