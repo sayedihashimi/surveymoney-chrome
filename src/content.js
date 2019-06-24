@@ -44,21 +44,28 @@ function handleButtonClick(sender) {
 
     var tagLabels = $(targetParent).find('a.ta-category-tag');
     var fullMessage = '';
+    var tagInfo = []
     for (tag of tagLabels) {
         var percentage = $(tag).closest('div[class="sm-grid"]').find('div[class="ta-list-item-percentage"]').text();
         var count = $(tag).closest('div[class="sm-grid"]').find('div[class="ta-list-item-count"]').text();
 
-        var msg = $(tag).text() + '\t' + percentage + '\t' + count;
-        fullMessage += msg + '\n';
-        console.log(msg);
+        var tagObj = {
+            "tag": $(tag).text(),
+            "percentOverall": percentage,
+            "count": count
+        };
+        tagInfo.push(tagObj);
+        //var msg = $(tag).text() + '\t' + percentage + '\t' + count;
+        //fullMessage += msg + '\n';
+        //console.log(msg);
     }
-    alert(fullMessage);
-    copyToClipboard(fullMessage);
-    showTagsInPopup(sender.target);
+    //alert(fullMessage);
+    //copyToClipboard(fullMessage);
+    showTagsInPopup(sender.target, tagInfo);
     return false;
 }
 
-function showTagsInPopup(exportButton) {
+function showTagsInPopup(exportButton, tagInfo) {
     var htmlToAdd = `
         <div id="tagsExport">
             <table id="tagsTable">
@@ -69,17 +76,8 @@ function showTagsInPopup(exportButton) {
                         <th>count</th>
                     </tr>
                 <thead>
-                <tbody>
-                    <tr>
-                        <td>acquisition</td>
-                        <td>1.2%</td>
-                        <td>2</td>
-                    </tr>
-                    <tr>
-                        <td>add-references</td>
-                        <td>0%</td>
-                        <td>0</td>
-                    </tr>
+                <tbody id="tagTableBody">
+                    ${getTableElementsFor(tagInfo)}
                 <tbody>
             </table>
         </div>
@@ -88,6 +86,20 @@ function showTagsInPopup(exportButton) {
     $(htmlToAdd)
         .insertAfter($(exportButton));
 
+    //     var tagTableBody = $("tagTableBody");
+    //     for (tag of tagInfo) {
+    //         var elementsToAdd = `
+    //         <tr>
+    //             <td>${tag.tag}</td>
+    //             <td>${tag.percentOverall}%</td>
+    //             <td>${tag.count}</td>
+    //         </tr>
+    // `;
+    //         tagTableBody.append(elementsToAdd);
+    //}
+
+
+
     /*
         $("<a class='wds-button wds-button--ghost wds-button--sm' href='#'>↑ Export tags</a>")
             .on("click", handleButtonClick)
@@ -95,6 +107,29 @@ function showTagsInPopup(exportButton) {
     */
 }
 
+function getTableElementsFor(tagInfo) {
+    var result = '';
+    for (tag of tagInfo) {
+        result += `
+        <tr>
+            <td>${tag.tag}</td>
+            <td>${tag.percentOverall}%</td>
+            <td>${tag.count}</td>
+        </tr>
+`;
+    }
+    return result;
+    //     var result = `
+    //         <tr>
+    //             <td>${tag.tag}</td>
+    //             <td>${tag.percentOverall}%</td>
+    //             <td>${tag.count}</td>
+    //         </tr>
+    // `;
+
+    //     return result;
+    //     s
+}
 async function extensionMain() {
     registerDomWatcherToInsertElement();
     addButton();
