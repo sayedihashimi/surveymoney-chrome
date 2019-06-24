@@ -28,14 +28,14 @@ function registerDomWatcherToInsertElement() {
 }
 
 function copyToClipboard(text) {
-    const input = document.createElement('input');
-    input.style.position = 'fixed';
-    input.style.opacity = 0;
-    input.value = text;
-    document.body.appendChild(input);
-    input.select();
+    const textarea = document.createElement('textarea');
+    //textarea.style.position = 'fixed';
+    textarea.style.opacity = 0;
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
     document.execCommand('Copy');
-    document.body.removeChild(input);
+    document.body.removeChild(textarea);
 };
 
 function handleButtonClick(sender) {
@@ -83,6 +83,16 @@ function showTagInfo(exportButton, tagInfo) {
 
     $(htmlToAdd)
         .insertAfter($(exportButton));
+
+    copyToClipboard(getStringFor(tagInfo));
+}
+
+function getStringFor(tagInfo) {
+    var result = 'tag' + '\t' + 'percent overall' + '\t' + 'count' + '\n';
+    for (tag of tagInfo) {
+        result += tag.tag + '\t' + tag.percentOverall + '\t' + tag.count + '\n';
+    }
+    return result;
 }
 
 function getTableElementsFor(tagInfo) {
