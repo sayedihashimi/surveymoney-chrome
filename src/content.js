@@ -1,31 +1,6 @@
 debugger;
 console.log("content script2 loaded");
 
-function addButton() {
-    var newTagElements = $("a:not([ce-processed])[ta-new-category-btn]");
-    // first add the attribute to prevent duplication
-    newTagElements.attr('ce-processed', '');
-
-    $("<a class='wds-button wds-button--ghost wds-button--sm' href='#'>↑ Export tags</a>")
-        .on("click", handleButtonClick)
-        .insertAfter(newTagElements)
-}
-
-function registerDomWatcherToInsertElement() {
-    MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-
-    var observer = new MutationObserver(function(mutations, observer) {
-        // fired when a mutation occurs
-        // console.log(mutations, observer);
-        console.log('calling addButton')
-        addButton();
-    });
-    // TODO: can this be fine tuned?
-    observer.observe(document, {
-        subtree: true,
-        childList: true
-    });
-}
 
 function copyToClipboard(text) {
     const textarea = document.createElement('textarea');
@@ -38,7 +13,48 @@ function copyToClipboard(text) {
     document.body.removeChild(textarea);
 };
 
-function handleButtonClick(sender) {
+function addExportTagsButton() {
+    var newTagElements = $("a:not([ce-processed])[ta-new-category-btn]");
+    // first add the attribute to prevent duplication
+    newTagElements.attr('ce-processed', '');
+
+    pauseMutationObserver();
+    $("<a class='wds-button wds-button--ghost wds-button--sm' href='#'>↑ Export tags</a>")
+        .on("click", handleExportTagsButtonClick)
+        .insertAfter(newTagElements)
+    enableMutationObserver();
+}
+var observer;
+
+function enableMutationObserver() {
+    registerDomWatcherToInsertElement();
+}
+
+function pauseMutationObserver() {
+    if (observer == null) { return; }
+
+    observer.disconnect();
+}
+
+function registerDomWatcherToInsertElement() {
+    MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+
+    if (observer == null) {
+        observer = new MutationObserver(function(mutations, observer) {
+            // fired when a mutation occurs
+            console.log('dom mutated, adding elements');
+            addExportTagsButton();
+            addExportResponsesWithTagsButton();
+        });
+    }
+    // TODO: can this be fine tuned?
+    observer.observe(document, {
+        subtree: true,
+        childList: true
+    });
+}
+
+function handleExportTagsButtonClick(sender) {
     // get to the parent element that we need
     var targetParent = $(sender.target).closest('div[view-role="TaCategoriesPanel"]');
 
@@ -81,8 +97,10 @@ function showTagInfo(exportButton, tagInfo) {
     // remove tagsExport if it exists
     $("#tagsExport").remove();
 
+    pauseMutationObserver();
     $(htmlToAdd)
         .insertAfter($(exportButton));
+    enableMutationObserver();
 
     copyToClipboard(getStringFor(tagInfo));
 }
@@ -108,10 +126,29 @@ function getTableElementsFor(tagInfo) {
     }
     return result;
 }
+
+/* related to ExportResponsesWithTags */
+function addExportResponsesWithTagsButton() {
+    // The tab that is named TAGS(##)
+    var tagsElement = $('div:not([ce-processed])[view-role="TaTabsView"]>nav[ta-tabs-nav]>a:not([ce-processed]):last-of-type');
+    // first add the attribute to prevent duplication
+    tagsElement.attr('ce-processed', '');
+
+    pauseMutationObserver();
+    $("<a ce-processed class='wds-button wds-button--ghost wds-button--sm' href='#' style='color:red'>↑ Export responses with tags</a>")
+        .on("click", handleExportResponsesWithTagsClick)
+        .insertAfter(tagsElement)
+    enableMutationObserver();
+}
+
+function handleExportResponsesWithTagsClick(sender) {
+    alert('foo');
+}
+
 async function extensionMain() {
     registerDomWatcherToInsertElement();
-    addButton();
-
+    addExportTagsButton();
+    addExportResponsesWithTagsButton();
 }
 
 extensionMain();
